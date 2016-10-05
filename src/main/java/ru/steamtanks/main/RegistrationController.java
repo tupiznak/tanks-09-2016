@@ -1,12 +1,14 @@
 package ru.steamtanks.main;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.steamtanks.models.UserProfile;
-import ru.steamtanks.services.AccauntService;
+import ru.steamtanks.services.AccountService;
 
 import javax.servlet.http.HttpSession;
 import java.util.Objects;
@@ -15,13 +17,13 @@ import java.util.Objects;
 @CrossOrigin()
 public class RegistrationController {
 
-    final private AccauntService accauntService;
+    final private AccountService accountService;
     final private HttpSession httpSession;
 
     @Autowired
-    public RegistrationController(AccauntService accauntService,
+    public RegistrationController(AccountService accountService,
                                   HttpSession httpSession) {
-        this.accauntService = accauntService;
+        this.accountService = accountService;
         this.httpSession = httpSession;
     }
 
@@ -34,15 +36,15 @@ public class RegistrationController {
 
         //validation on front
 
-        final UserProfile existingUser = accauntService.getUser(login);
+        final UserProfile existingUser = accountService.getUser(login);
         if (existingUser != null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{}");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 
-        accauntService.addUser(login, password, email);
+        accountService.addUser(login, password, email);
 
         httpSession.setAttribute("username", login);
 
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+        return ResponseEntity.ok("{}");
     }
 
     @RequestMapping(path = "/api/user", method = RequestMethod.DELETE)
@@ -50,66 +52,79 @@ public class RegistrationController {
         String login = (String) httpSession.getAttribute("username");
 
         if (StringUtils.isEmpty(login))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{}");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 
-        accauntService.delUser(login);
+        accountService.delUser(login);
         sessionDel();
 
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+        return ResponseEntity.ok("{}");
     }
 
     @RequestMapping(path = "/api/user", method = RequestMethod.PUT)
-    public ResponseEntity userCange(@RequestBody RegistrationRequest body) {
-        String login = body.getLogin();
+    public ResponseEntity userChange(@RequestBody RegistrationRequest body) {
         String email = body.getEmail();
         String password = body.getPassword();
+        String newPassword = body.getNewPassword();
 
-        //validation on front
+        String login = (String) httpSession.getAttribute("username");
 
-        final UserProfile existingUser = accauntService.getUser(login);
+        final UserProfile existingUser = accountService.getUser(login);
         if (existingUser == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{}");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 
-        existingUser.setLogin(login);
-        existingUser.setEmail(email);
-        existingUser.setPassword(password);
+        if (!Objects.equals(password, existingUser.getPassword()))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
+        if (!StringUtils.isEmpty(newPassword))
+            existingUser.setPassword(password);
+        if (!StringUtils.isEmpty(email))
+            existingUser.setEmail(email);
 
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+        return ResponseEntity.ok("{}");
+    }
+
+    @RequestMapping(path = "/api/user", method = RequestMethod.GET)
+    public ResponseEntity userGet() {
+        String login = (String) httpSession.getAttribute("username");
+
+        if (StringUtils.isEmpty(login))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
+
+        final UserProfile existingUser = accountService.getUser(login);
+        if (existingUser == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
+
+        return ResponseEntity.ok(existingUser);
     }
 
     //session
     @RequestMapping(path = "/api/session", method = RequestMethod.GET)
     public ResponseEntity sessionGet() {
+        final UserProfile existingUser = accountService.getUser((String) httpSession.getAttribute("username"));
+        if (existingUser == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
 
-        final UserProfile existingUser = accauntService.getUser((String) httpSession.getAttribute("username"));
-        if (existingUser==null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{}");
-
-        return ResponseEntity.ok().body(
-                "{\"login\":\""+existingUser.getLogin()+"\"," +
-                        "\"email\":\""+ existingUser.getEmail()+"\"}"
-        );
+        return ResponseEntity.ok(existingUser);
     }
 
     @RequestMapping(path = "/api/session", method = RequestMethod.POST)
-    public ResponseEntity sessionLogin(@RequestBody RegistrationRequest body) {
+    public ResponseEntity sessionLogin(@RequestBody RegistrationRequest body) throws JsonProcessingException {
         String login = body.getLogin();
         String password = body.getPassword();
 
         //validation on front
 
-        final UserProfile existingUser = accauntService.getUser(login);
+        final UserProfile existingUser = accountService.getUser(login);
         if (existingUser == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{}");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
 
         if (!Objects.equals(existingUser.getPassword(), password))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{}");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
 
         httpSession.setAttribute("username", login);
 
-        return ResponseEntity.status(HttpStatus.OK).body(
-                "{\"email\":\""+ existingUser.getEmail()+"\"}"
-        );
+        ObjectMapper mapper = new ObjectMapper();
+
+        return ResponseEntity.ok(existingUser);
     }
 
     @RequestMapping(path = "/api/session", method = RequestMethod.DELETE)
@@ -117,17 +132,18 @@ public class RegistrationController {
         String login = (String) httpSession.getAttribute("username");
 
         if (StringUtils.isEmpty(login))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{}");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 
         httpSession.setAttribute("username", null);
 
-        return ResponseEntity.status(HttpStatus.OK).body("{}");
+        return ResponseEntity.ok("{}");
     }
 
     private static final class RegistrationRequest {
         private String login;
         private String email;
         private String password;
+        private String newPassword;
 
         public String getLogin() {
             return login;
@@ -139,6 +155,10 @@ public class RegistrationController {
 
         public String getPassword() {
             return password;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
         }
     }
 }

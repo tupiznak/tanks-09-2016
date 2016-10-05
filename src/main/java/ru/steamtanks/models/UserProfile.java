@@ -1,5 +1,7 @@
 package ru.steamtanks.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 public class UserProfile {
@@ -9,7 +11,10 @@ public class UserProfile {
     private String email;
     private String password;
 
-    public UserProfile(String login, String password, String email) {
+    public UserProfile(
+            String login,
+            String password,
+            String email) {
         this.login = login;
         this.email = email;
         this.password = password;
@@ -28,16 +33,16 @@ public class UserProfile {
         this.password = password;
     }
 
+    @JsonIgnore
     public Long getId() { return id; }
 
     public String getLogin() {
         return login;
     }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getEmail() { return email; }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
