@@ -1,7 +1,6 @@
 package ru.steamtanks.main;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,8 @@ public class RegistrationController {
 
     final private AccountService accountService;
     final private HttpSession httpSession;
+
+    final String primaryKeyToMap = "username";
 
     @Autowired
     public RegistrationController(AccountService accountService,
@@ -42,14 +43,14 @@ public class RegistrationController {
 
         accountService.addUser(login, password, email);
 
-        httpSession.setAttribute("username", login);
+        httpSession.setAttribute(primaryKeyToMap, login);
 
         return ResponseEntity.ok("{}");
     }
 
     @RequestMapping(path = "/api/user", method = RequestMethod.DELETE)
     public ResponseEntity userDel() {
-        String login = (String) httpSession.getAttribute("username");
+        String login = (String) httpSession.getAttribute(primaryKeyToMap);
 
         if (StringUtils.isEmpty(login))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
@@ -66,7 +67,7 @@ public class RegistrationController {
         String password = body.getPassword();
         String newPassword = body.getNewPassword();
 
-        String login = (String) httpSession.getAttribute("username");
+        String login = (String) httpSession.getAttribute(primaryKeyToMap);
 
         final UserProfile existingUser = accountService.getUser(login);
         if (existingUser == null)
@@ -84,7 +85,7 @@ public class RegistrationController {
 
     @RequestMapping(path = "/api/user", method = RequestMethod.GET)
     public ResponseEntity userGet() {
-        String login = (String) httpSession.getAttribute("username");
+        String login = (String) httpSession.getAttribute(primaryKeyToMap);
 
         if (StringUtils.isEmpty(login))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
@@ -99,7 +100,7 @@ public class RegistrationController {
     //session
     @RequestMapping(path = "/api/session", method = RequestMethod.GET)
     public ResponseEntity sessionGet() {
-        final UserProfile existingUser = accountService.getUser((String) httpSession.getAttribute("username"));
+        final UserProfile existingUser = accountService.getUser((String) httpSession.getAttribute(primaryKeyToMap));
         if (existingUser == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
 
@@ -120,21 +121,19 @@ public class RegistrationController {
         if (!Objects.equals(existingUser.getPassword(), password))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
 
-        httpSession.setAttribute("username", login);
-
-        ObjectMapper mapper = new ObjectMapper();
+        httpSession.setAttribute(primaryKeyToMap, login);
 
         return ResponseEntity.ok(existingUser);
     }
 
     @RequestMapping(path = "/api/session", method = RequestMethod.DELETE)
     public ResponseEntity sessionDel() {
-        String login = (String) httpSession.getAttribute("username");
+        String login = (String) httpSession.getAttribute(primaryKeyToMap);
 
         if (StringUtils.isEmpty(login))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 
-        httpSession.setAttribute("username", null);
+        httpSession.invalidate();
 
         return ResponseEntity.ok("{}");
     }
@@ -145,9 +144,7 @@ public class RegistrationController {
         private String password;
         private String newPassword;
 
-        public String getLogin() {
-            return login;
-        }
+        public String getLogin() { return login; }
 
         public String getEmail() {
             return email;
