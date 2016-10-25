@@ -2,11 +2,8 @@ package ru.steamtanks.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 public class UserProfile {
-    private static final AtomicLong ID_GENETATOR = new AtomicLong(0);
-    private Long id;
+    private Integer id;
     private String login;
     private String email;
     private String password;
@@ -18,7 +15,17 @@ public class UserProfile {
         this.login = login;
         this.email = email;
         this.password = password;
-        this.id = ID_GENETATOR.getAndIncrement();
+        this.id = -1;
+    }
+    public UserProfile(
+            String login,
+            String password,
+            String email,
+            Integer id) {
+        this.login = login;
+        this.email = email;
+        this.password = password;
+        this.id = id;
     }
 
     public void setLogin(String login) {
@@ -34,7 +41,7 @@ public class UserProfile {
     }
 
     @JsonIgnore
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     public String getLogin() {
         return login;
