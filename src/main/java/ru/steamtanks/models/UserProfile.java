@@ -49,7 +49,7 @@ public class UserProfile {
 
     public String getEmail() { return email; }
 
-    @JsonIgnore
+    //@JsonIgnore TODO
     public String getPassword() {
         return password;
     }

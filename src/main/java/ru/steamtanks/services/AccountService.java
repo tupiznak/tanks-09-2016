@@ -12,6 +12,11 @@ import java.util.List;
 @Transactional
 public class AccountService {
     private final JdbcTemplate template;
+
+    public static String getTableUsers() {
+        return TABLE_USERS;
+    }
+
     private static final String TABLE_USERS = "users";
 
     public AccountService(JdbcTemplate template) {
