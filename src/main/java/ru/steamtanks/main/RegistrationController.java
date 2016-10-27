@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.steamtanks.models.UserProfile;
-import ru.steamtanks.services.AccountService;
+import ru.steamtanks.services.UserService.DummyUserService;
+import ru.steamtanks.services.UserService.UserTemplateService;
+import ru.steamtanks.services.UserService.UserJdbcService;
+
 
 import javax.servlet.http.HttpSession;
 import java.util.Objects;
@@ -16,13 +19,13 @@ import java.util.Objects;
 @CrossOrigin()
 public class RegistrationController {
 
-    final private AccountService accountService;
+    final private UserJdbcService accountService;
     final private HttpSession httpSession;
 
-    final String primaryKeyToMap = "username";
+    final private String primaryKeyToMap = "username";
 
     @Autowired
-    public RegistrationController(AccountService accountService,
+    public RegistrationController(UserJdbcService accountService,
                                   HttpSession httpSession) {
         this.accountService = accountService;
         this.httpSession = httpSession;
