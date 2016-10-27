@@ -62,43 +62,6 @@ public class RegistrationController {
         return ResponseEntity.ok("{}");
     }
 
-    @RequestMapping(path = "/api/user", method = RequestMethod.PUT)
-    public ResponseEntity userChange(@RequestBody RegistrationRequest body) {
-        /*String email = body.getEmail();
-        String password = body.getPassword();
-        String newPassword = body.getNewPassword();
-
-        String login = (String) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
-
-        final UserProfile existingUser = accountService.getUser(login);
-        if (existingUser == null)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
-
-        if (!Objects.equals(password, existingUser.getPassword()))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
-        if (!StringUtils.isEmpty(newPassword))
-            existingUser.setPassword(password);
-        if (!StringUtils.isEmpty(email))
-            existingUser.setEmail(email);
-*/
-        return ResponseEntity.ok("{}");
-    }
-
-    @RequestMapping(path = "/api/user", method = RequestMethod.GET)
-    public ResponseEntity userGet() {
-        Integer id = (Integer) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
-        System.out.println(id);
-
-        if (StringUtils.isEmpty(id))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
-
-        final UserProfile existingUser = accountService.getUser(id);
-        if (existingUser == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
-
-        return ResponseEntity.ok(existingUser);
-    }
-
     //session
     @RequestMapping(path = "/api/session", method = RequestMethod.GET)
     public ResponseEntity sessionGet() {
@@ -106,7 +69,6 @@ public class RegistrationController {
         if (existingUser == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
 
-//        System.out.println(existingUser.getLogin()+" "+ existingUser.getPassword()+" "+ existingUser.getEmail());
         return ResponseEntity.ok(existingUser);
     }
 
@@ -115,7 +77,9 @@ public class RegistrationController {
         String login = body.getLogin();
         String password = body.getPassword();
 
-        //validation on front
+        if (    StringUtils.isEmpty(login)||
+                StringUtils.isEmpty(password))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 
         final UserProfile existingUser = accountService.getUser(login);
         if (existingUser == null)
@@ -164,3 +128,42 @@ public class RegistrationController {
         }
     }
 }
+
+/*
+    @RequestMapping(path = "/api/user", method = RequestMethod.PUT)
+    public ResponseEntity userChange(@RequestBody RegistrationRequest body) {
+        String email = body.getEmail();
+        String password = body.getPassword();
+        String newPassword = body.getNewPassword();
+
+        String login = (String) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
+
+        final UserProfile existingUser = accountService.getUser(login);
+        if (existingUser == null)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
+
+        if (!Objects.equals(password, existingUser.getPassword()))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
+        if (!StringUtils.isEmpty(newPassword))
+            existingUser.setPassword(password);
+        if (!StringUtils.isEmpty(email))
+            existingUser.setEmail(email);
+        return ResponseEntity.ok("{}");
+    }
+
+    @RequestMapping(path = "/api/user", method = RequestMethod.GET)
+    public ResponseEntity userGet() {
+        Integer id = (Integer) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
+
+        if (StringUtils.isEmpty(id))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
+
+        final UserProfile existingUser = accountService.getUser(id);
+        if (existingUser == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
+
+        return ResponseEntity.ok(existingUser);
+    }
+
+
+ */
