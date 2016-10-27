@@ -8,12 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 import ru.steamtanks.models.UserProfile;
 
@@ -52,18 +50,18 @@ public class AccountServiceTest {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(userProfile);
 
-        MockHttpSession mockHttpSession = new MockHttpSession();
+        //MockHttpSession mockHttpSession = new MockHttpSession();
 
         final Integer beforeCountRows = countRowsInTable(template, getTableUsers());
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
                 .header("Content-Type","application/json")
-                .session(mockHttpSession)
+//                .session(mockHttpSession)
                 .content(jsonInString))
                 .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print())
+                //.andDo(MockMvcResultHandlers.print())
                 .andReturn();
 
-        System.out.println(mockHttpSession.getAttribute("iduser"));
+        //System.out.println(mockHttpSession.getAttribute("iduser"));
 
         try {
             Integer id = template.queryForObject(
