@@ -1,1 +1,0 @@
-create table users(id int auto_increment primary key NOT NULL,login varchar(45) DEFAULT NULL UNIQUE,email VARCHAR(45) DEFAULT NULL,password VARCHAR(45) DEFAULT NULL);
