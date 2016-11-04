@@ -1,16 +1,21 @@
-package ru.steamtanks.services;
+package ru.steamtanks.services.implementation;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.steamtanks.exceptions.AccountService.ASDeleteUserException;
+import ru.steamtanks.exceptions.AccountService.ASDetectUserException;
+import ru.steamtanks.exceptions.AccountService.ASUserExistException;
 import ru.steamtanks.models.UserProfile;
+import ru.steamtanks.services.interfaces.AbstractAccountService;
 
 import java.util.List;
 
 @Service
 @Transactional
-public class AccountService {
+public class AccountService implements AbstractAccountService {
     private final JdbcTemplate template;
 
     public static String getTableUsers() {
@@ -23,36 +28,40 @@ public class AccountService {
         this.template = template;
     }
 
-    public Integer addUser(String login, String password, String email) {
+    public int addUser(String login, String password, String email)
+            throws ASUserExistException, ASDetectUserException {
         try {
             template.update(
                     "insert into "+TABLE_USERS+" (login,password,email) values(?,?,?)",
                     login, password, email);
         }
-        catch (Exception e){
-            return -1;
+        catch (DataAccessException e){
+            throw new ASUserExistException();
         }
-        Integer id = template.queryForObject(
-                "select id from "+TABLE_USERS+" where login=?",Integer.class,login
-        );
+        Integer id;
+        try {
+            id = template.queryForObject(
+                    "select id from "+TABLE_USERS+" where login=?",Integer.class,login
+            );
+        }catch (DataAccessException e){
+            throw new ASDetectUserException();
+        }
 
         return id;
     }
 
-    public Boolean delUser(Integer id) {
+    public void delUser(Integer id) throws ASDeleteUserException {
         try{
         template.update(
                 "delete from "+TABLE_USERS+" where id=?",
                 id);
         }
-        catch (Exception e){
-            return false;
+        catch (DataAccessException e){
+            throw new ASDeleteUserException();
         }
-        return true;
     }
 
     public UserProfile getUser(Integer id) {
-
         final RowMapper<UserProfile> userProfileRowMapper =
                 (res, rowNum) -> new UserProfile(
                         res.getString(1),

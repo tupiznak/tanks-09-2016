@@ -5,8 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import ru.steamtanks.exceptions.AccountService.ASDeleteUserException;
+import ru.steamtanks.exceptions.AccountService.ASDetectUserException;
+import ru.steamtanks.exceptions.AccountService.ASUserExistException;
 import ru.steamtanks.models.UserProfile;
-import ru.steamtanks.services.AccountService;
+import ru.steamtanks.services.implementation.AccountService;
 
 import javax.servlet.http.HttpSession;
 import java.util.Objects;
@@ -39,26 +42,30 @@ public class RegistrationController {
                 StringUtils.isEmpty(password))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 
-        Integer id = accountService.addUser(login, password, email);
-
-        if(id == -1)
+        int id;
+        try {
+            id = accountService.addUser(login, password, email);
+        }catch (ASUserExistException e){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
+        }catch (ASDetectUserException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
+        }
 
         httpSession.setAttribute(PRIMARY_KEY_TO_MAP, id);
         return ResponseEntity.ok().header("Set-Cookie", "id=" + id).body("{}");
-
     }
 
     @RequestMapping(path = "/api/user", method = RequestMethod.DELETE)
     public ResponseEntity userDel() {
         Integer id = (Integer) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
 
-        Boolean isDel = accountService.delUser(id);
-        sessionDel();
-
-        if(!isDel)
+        try {
+            accountService.delUser(id);
+        }catch (ASDeleteUserException e){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
+        }
 
+        sessionDel();
         return ResponseEntity.ok("{}");
     }
 
