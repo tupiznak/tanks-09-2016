@@ -18,8 +18,10 @@ import java.util.Objects;
 @CrossOrigin()
 public class RegistrationController {
 
-    final private AccountService accountService;
-    final private HttpSession httpSession;
+    //add LOGGER
+
+    private final AccountService accountService;
+    private final HttpSession httpSession;
 
     private static final String PRIMARY_KEY_TO_MAP = "iduser";
 
@@ -33,16 +35,16 @@ public class RegistrationController {
     //user
     @RequestMapping(path = "/api/user", method = RequestMethod.POST)
     public ResponseEntity userAdd(@RequestBody RegistrationRequest body) {
-        String login = body.getLogin();
-        String email = body.getEmail();
-        String password = body.getPassword();
+        final String login = body.getLogin();
+        final String email = body.getEmail();
+        final String password = body.getPassword();
 
         if (    StringUtils.isEmpty(login)||
                 StringUtils.isEmpty(email)||
                 StringUtils.isEmpty(password))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 
-        int id;
+        final int id;
         try {
             id = accountService.addUser(login, password, email);
         }catch (ASUserExistException e){
@@ -57,7 +59,7 @@ public class RegistrationController {
 
     @RequestMapping(path = "/api/user", method = RequestMethod.DELETE)
     public ResponseEntity userDel() {
-        Integer id = (Integer) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
+        final Integer id = (Integer) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
 
         try {
             accountService.delUser(id);
@@ -81,8 +83,8 @@ public class RegistrationController {
 
     @RequestMapping(path = "/api/session", method = RequestMethod.POST)
     public ResponseEntity sessionLogin(@RequestBody RegistrationRequest body) {
-        String login = body.getLogin();
-        String password = body.getPassword();
+        final String login = body.getLogin();
+        final String password = body.getPassword();
 
         if (    StringUtils.isEmpty(login)||
                 StringUtils.isEmpty(password))
@@ -102,7 +104,7 @@ public class RegistrationController {
 
     @RequestMapping(path = "/api/session", method = RequestMethod.DELETE)
     public ResponseEntity sessionDel() {
-        Integer id = (Integer) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
+        final Integer id = (Integer) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
 
         if (StringUtils.isEmpty(id))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
@@ -135,42 +137,3 @@ public class RegistrationController {
         }
     }
 }
-
-/*
-    @RequestMapping(path = "/api/user", method = RequestMethod.PUT)
-    public ResponseEntity userChange(@RequestBody RegistrationRequest body) {
-        String email = body.getEmail();
-        String password = body.getPassword();
-        String newPassword = body.getNewPassword();
-
-        String login = (String) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
-
-        final UserProfile existingUser = accountService.getUser(login);
-        if (existingUser == null)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
-
-        if (!Objects.equals(password, existingUser.getPassword()))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
-        if (!StringUtils.isEmpty(newPassword))
-            existingUser.setPassword(password);
-        if (!StringUtils.isEmpty(email))
-            existingUser.setEmail(email);
-        return ResponseEntity.ok("{}");
-    }
-
-    @RequestMapping(path = "/api/user", method = RequestMethod.GET)
-    public ResponseEntity userGet() {
-        Integer id = (Integer) httpSession.getAttribute(PRIMARY_KEY_TO_MAP);
-
-        if (StringUtils.isEmpty(id))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
-
-        final UserProfile existingUser = accountService.getUser(id);
-        if (existingUser == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}");
-
-        return ResponseEntity.ok(existingUser);
-    }
-
-
- */
