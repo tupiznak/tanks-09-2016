@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import ru.steamtanks.exceptions.AccountService.ASDetectUserException;
+import ru.steamtanks.exceptions.AccountService.ASSomeDatabaseException;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
@@ -54,21 +54,22 @@ public class RegistrationControllerTest {
         request.put("email", "veryvery");
 
         final Integer beforeCountRows = countRowsInTable(template, getTableUsers());
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
                 .header("Content-Type","application/json")
                 .content(request.toString()))
                 .andExpect(status().isOk())
                 .andReturn();
 
         try {
-            Integer id = template.queryForObject(
+            final Integer id = template.queryForObject(
                     "select id from "+getTableUsers()+" where login=?",
                     Integer.class,request.getString("login")
             );
             assertEquals(result.getResponse().getHeader("Set-cookie"),"id="+id);
         }
         catch (Exception e){
-            throw new ASDetectUserException();
+            e.getStackTrace();
+            throw new ASSomeDatabaseException();
         }
 
         assertEquals(beforeCountRows+1,  countRowsInTable(template, getTableUsers()));

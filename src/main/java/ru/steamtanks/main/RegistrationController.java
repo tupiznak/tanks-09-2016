@@ -5,8 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import ru.steamtanks.exceptions.AccountService.ASDeleteUserException;
-import ru.steamtanks.exceptions.AccountService.ASDetectUserException;
+import ru.steamtanks.exceptions.AccountService.ASSomeDatabaseException;
 import ru.steamtanks.exceptions.AccountService.ASUserExistException;
 import ru.steamtanks.models.UserProfile;
 import ru.steamtanks.services.implementation.AccountService;
@@ -49,7 +48,8 @@ public class RegistrationController {
             id = accountService.addUser(login, password, email);
         }catch (ASUserExistException e){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
-        }catch (ASDetectUserException e){
+        }catch (ASSomeDatabaseException e){
+            //// TODO: 11/11/16 need add to api "ServerError"
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
         }
 
@@ -63,7 +63,8 @@ public class RegistrationController {
 
         try {
             accountService.delUser(id);
-        }catch (ASDeleteUserException e){
+        }catch (ASSomeDatabaseException e){
+            //// TODO: 11/11/16 need add to api "ServerError"
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
         }
 

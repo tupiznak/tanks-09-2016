@@ -1,12 +1,13 @@
 package ru.steamtanks.services.implementation;
 
+import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.steamtanks.exceptions.AccountService.ASDeleteUserException;
-import ru.steamtanks.exceptions.AccountService.ASDetectUserException;
+import ru.steamtanks.exceptions.AccountService.ASSomeDatabaseException;
 import ru.steamtanks.exceptions.AccountService.ASUserExistException;
 import ru.steamtanks.models.UserProfile;
 import ru.steamtanks.services.interfaces.AbstractAccountService;
@@ -17,6 +18,8 @@ import java.util.List;
 @Transactional
 public class AccountService implements AbstractAccountService {
     private final JdbcTemplate template;
+
+    private static final Logger LOGGER = Logger.getLogger(AccountService.class);
 
     public static String getTableUsers() {
         return TABLE_USERS;
@@ -30,36 +33,38 @@ public class AccountService implements AbstractAccountService {
 
     @Override
     public int addUser(String login, String password, String email)
-            throws ASUserExistException, ASDetectUserException {
-        try {
+            throws ASUserExistException, ASSomeDatabaseException {
+        try {//// TODO: 11/11/16 need go to JDBCT Spring
             template.update(
                     "insert into "+TABLE_USERS+" (login,password,email) values(?,?,?)",
                     login, password, email);
-        }
-        catch (DataAccessException e){
-            throw new ASUserExistException();
-        }
-        final Integer id;
-        try {
-            id = template.queryForObject(
+
+            return template.queryForObject(
                     "select id from "+TABLE_USERS+" where login=?",Integer.class,login
             );
-        }catch (DataAccessException e){
-            throw new ASDetectUserException();
         }
-
-        return id;
+        catch (DuplicateKeyException e){
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug(e.getStackTrace());
+            LOGGER.warn("User exist");
+            throw new ASUserExistException();
+        }
+        catch (DataAccessException e){
+            LOGGER.error(e.getStackTrace());
+            throw new ASSomeDatabaseException();
+        }
     }
 
     @Override
-    public void delUser(Integer id) throws ASDeleteUserException {
+    public void delUser(Integer id) throws ASSomeDatabaseException {
         try{
         template.update(
                 "delete from "+TABLE_USERS+" where id=?",
                 id);
         }
         catch (DataAccessException e){
-            throw new ASDeleteUserException();
+            LOGGER.error(e.getStackTrace());
+            throw new ASSomeDatabaseException();
         }
     }
 
