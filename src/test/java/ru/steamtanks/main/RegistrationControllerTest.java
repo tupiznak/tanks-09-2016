@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -67,9 +68,9 @@ public class RegistrationControllerTest {
                     Integer.class, request.getString("login")
             );
             assertEquals(result.getResponse().getHeader("Set-cookie"), "id=" + id);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             e.getStackTrace();
-            throw new ASSomeDatabaseException();
+            throw new ASSomeDatabaseException("Exception in add user", e);
         }
 
         assertEquals(beforeCountRows + 1, countRowsInTable(template, getTableUsers()));

@@ -1,6 +1,8 @@
 package ru.steamtanks.exceptions.AccountService;
 
+import org.springframework.dao.DataAccessException;
+
 public class ASUserExistException extends Exception {
-    public ASUserExistException(){
+    public ASUserExistException(String messege, DataAccessException cause){
     }
 }

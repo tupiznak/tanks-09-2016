@@ -1,6 +1,7 @@
 package ru.steamtanks.services.implementation;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,12 +45,12 @@ public class AccountService implements AbstractAccountService {
             );
         } catch (DuplicateKeyException e) {
             if (LOGGER.isDebugEnabled())
-                LOGGER.debug(e.getStackTrace());
+                LOGGER.debug("Exception user exist", e);
             LOGGER.warn("User exist");
-            throw new ASUserExistException();
+            throw new ASUserExistException("User exist", e);
         } catch (DataAccessException e) {
-            LOGGER.error(e.getStackTrace());
-            throw new ASSomeDatabaseException();
+            LOGGER.error("Exception in add user", e);
+            throw new ASSomeDatabaseException("Exception in add user", e);
         }
     }
 
@@ -60,13 +61,13 @@ public class AccountService implements AbstractAccountService {
                     "DELETE FROM " + TABLE_USERS + " WHERE id=?",
                     id);
         } catch (DataAccessException e) {
-            LOGGER.error(e.getStackTrace());
-            throw new ASSomeDatabaseException();
+            LOGGER.error("Exception in delete user", e);
+            throw new ASSomeDatabaseException("Exception in delete user", e);
         }
     }
 
     @Override
-    public UserProfile getUser(Integer id) {
+    public @Nullable UserProfile getUser(Integer id) {
         final RowMapper<UserProfile> userProfileRowMapper =
                 (res, rowNum) -> new UserProfile(
                         res.getString(1),
@@ -88,7 +89,7 @@ public class AccountService implements AbstractAccountService {
     }
 
     @Override
-    public UserProfile getUser(String login) {
+    public @Nullable UserProfile getUser(String login) {
 
         final RowMapper<UserProfile> userProfileRowMapper =
                 (res, rowNum) -> new UserProfile(
