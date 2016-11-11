@@ -7,7 +7,7 @@ import ru.steamtanks.models.UserProfile;
 
 @Service
 public interface AbstractAccountService {
-    int addUser (String login, String password, String email)
+    int addUser(String login, String password, String email)
             throws ASUserExistException, ASSomeDatabaseException;
 
     void delUser(Integer id) throws ASSomeDatabaseException;

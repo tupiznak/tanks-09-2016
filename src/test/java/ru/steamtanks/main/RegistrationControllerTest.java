@@ -30,6 +30,7 @@ public class RegistrationControllerTest {
 
     @Autowired
     private JdbcTemplate template;
+
     @Test
     public void addOneUser() throws Exception {
         final JSONObject request = new JSONObject();
@@ -39,11 +40,11 @@ public class RegistrationControllerTest {
 
         final Integer beforeCountRows = countRowsInTable(template, getTableUsers());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .content(request.toString()))
                 .andExpect(status().isOk());
 
-        assertEquals(beforeCountRows+1,  countRowsInTable(template, getTableUsers()));
+        assertEquals(beforeCountRows + 1, countRowsInTable(template, getTableUsers()));
     }
 
     @Test
@@ -55,24 +56,23 @@ public class RegistrationControllerTest {
 
         final Integer beforeCountRows = countRowsInTable(template, getTableUsers());
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .content(request.toString()))
                 .andExpect(status().isOk())
                 .andReturn();
 
         try {
             final Integer id = template.queryForObject(
-                    "select id from "+getTableUsers()+" where login=?",
-                    Integer.class,request.getString("login")
+                    "select id from " + getTableUsers() + " where login=?",
+                    Integer.class, request.getString("login")
             );
-            assertEquals(result.getResponse().getHeader("Set-cookie"),"id="+id);
-        }
-        catch (Exception e){
+            assertEquals(result.getResponse().getHeader("Set-cookie"), "id=" + id);
+        } catch (Exception e) {
             e.getStackTrace();
             throw new ASSomeDatabaseException();
         }
 
-        assertEquals(beforeCountRows+1,  countRowsInTable(template, getTableUsers()));
+        assertEquals(beforeCountRows + 1, countRowsInTable(template, getTableUsers()));
     }
 
     @Test
@@ -84,16 +84,16 @@ public class RegistrationControllerTest {
 
         final Integer beforeCountRows = countRowsInTable(template, getTableUsers());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .content(request.toString()))
                 .andExpect(status().isOk());
-        assertEquals(beforeCountRows+1,  countRowsInTable(template, getTableUsers()));
+        assertEquals(beforeCountRows + 1, countRowsInTable(template, getTableUsers()));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user")
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .content(request.toString()))
                 .andExpect(status().isForbidden());
-        assertEquals(beforeCountRows+1,  countRowsInTable(template, getTableUsers()));
+        assertEquals(beforeCountRows + 1, countRowsInTable(template, getTableUsers()));
     }
 
 /*

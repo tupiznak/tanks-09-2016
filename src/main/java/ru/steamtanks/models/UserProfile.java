@@ -17,6 +17,7 @@ public class UserProfile {
         this.password = password;
         this.id = -1;
     }
+
     public UserProfile(
             String login,
             String password,
@@ -41,13 +42,17 @@ public class UserProfile {
     }
 
     @JsonIgnore
-    public Integer getId() { return id; }
+    public Integer getId() {
+        return id;
+    }
 
     public String getLogin() {
         return login;
     }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 
     @JsonIgnore
     public String getPassword() {

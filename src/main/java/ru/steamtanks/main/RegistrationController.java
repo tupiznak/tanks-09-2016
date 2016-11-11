@@ -38,17 +38,17 @@ public class RegistrationController {
         final String email = body.getEmail();
         final String password = body.getPassword();
 
-        if (    StringUtils.isEmpty(login)||
-                StringUtils.isEmpty(email)||
+        if (StringUtils.isEmpty(login) ||
+                StringUtils.isEmpty(email) ||
                 StringUtils.isEmpty(password))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 
         final int id;
         try {
             id = accountService.addUser(login, password, email);
-        }catch (ASUserExistException e){
+        } catch (ASUserExistException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
-        }catch (ASSomeDatabaseException e){
+        } catch (ASSomeDatabaseException e) {
             //// TODO: 11/11/16 need add to api "ServerError"
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
         }
@@ -63,7 +63,7 @@ public class RegistrationController {
 
         try {
             accountService.delUser(id);
-        }catch (ASSomeDatabaseException e){
+        } catch (ASSomeDatabaseException e) {
             //// TODO: 11/11/16 need add to api "ServerError"
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
         }
@@ -87,7 +87,7 @@ public class RegistrationController {
         final String login = body.getLogin();
         final String password = body.getPassword();
 
-        if (    StringUtils.isEmpty(login)||
+        if (StringUtils.isEmpty(login) ||
                 StringUtils.isEmpty(password))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{}");
 

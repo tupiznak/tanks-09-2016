@@ -36,20 +36,18 @@ public class AccountService implements AbstractAccountService {
             throws ASUserExistException, ASSomeDatabaseException {
         try {//// TODO: 11/11/16 need go to JDBCT Spring
             template.update(
-                    "insert into "+TABLE_USERS+" (login,password,email) values(?,?,?)",
+                    "INSERT INTO " + TABLE_USERS + " (login,password,email) VALUES(?,?,?)",
                     login, password, email);
 
             return template.queryForObject(
-                    "select id from "+TABLE_USERS+" where login=?",Integer.class,login
+                    "SELECT id FROM " + TABLE_USERS + " WHERE login=?", Integer.class, login
             );
-        }
-        catch (DuplicateKeyException e){
+        } catch (DuplicateKeyException e) {
             if (LOGGER.isDebugEnabled())
                 LOGGER.debug(e.getStackTrace());
             LOGGER.warn("User exist");
             throw new ASUserExistException();
-        }
-        catch (DataAccessException e){
+        } catch (DataAccessException e) {
             LOGGER.error(e.getStackTrace());
             throw new ASSomeDatabaseException();
         }
@@ -57,12 +55,11 @@ public class AccountService implements AbstractAccountService {
 
     @Override
     public void delUser(Integer id) throws ASSomeDatabaseException {
-        try{
-        template.update(
-                "delete from "+TABLE_USERS+" where id=?",
-                id);
-        }
-        catch (DataAccessException e){
+        try {
+            template.update(
+                    "DELETE FROM " + TABLE_USERS + " WHERE id=?",
+                    id);
+        } catch (DataAccessException e) {
             LOGGER.error(e.getStackTrace());
             throw new ASSomeDatabaseException();
         }
@@ -75,12 +72,12 @@ public class AccountService implements AbstractAccountService {
                         res.getString(1),
                         res.getString(2),
                         res.getString(3)
-                        );
+                );
 
         final List<UserProfile> value = template.query(
-                "select login, password, email from "+TABLE_USERS+" where id=?",
+                "SELECT login, password, email FROM " + TABLE_USERS + " WHERE id=?",
                 userProfileRowMapper, id);
-        if(value.isEmpty())
+        if (value.isEmpty())
             return null;
 
         return new UserProfile(
@@ -102,9 +99,9 @@ public class AccountService implements AbstractAccountService {
                 );
 
         final List<UserProfile> value = template.query(
-                "select password, email, id from "+TABLE_USERS+" where login=?",
+                "SELECT password, email, id FROM " + TABLE_USERS + " WHERE login=?",
                 userProfileRowMapper, login);
-        if(value.isEmpty())
+        if (value.isEmpty())
             return null;
 
         return new UserProfile(
