@@ -17,8 +17,6 @@ import java.util.Objects;
 @CrossOrigin()
 public class RegistrationController {
 
-    //add LOGGER
-
     private final AccountService accountService;
     private final HttpSession httpSession;
 
