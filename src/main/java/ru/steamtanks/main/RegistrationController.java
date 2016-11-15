@@ -20,7 +20,7 @@ public class RegistrationController {
     private final AccountService accountService;
     private final HttpSession httpSession;
 
-    private static final String PRIMARY_KEY_TO_MAP = "iduser";
+    public static final String PRIMARY_KEY_TO_MAP = "iduser";
 
     @Autowired
     public RegistrationController(AccountService accountService,

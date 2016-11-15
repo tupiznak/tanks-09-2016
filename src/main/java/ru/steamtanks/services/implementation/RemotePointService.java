@@ -24,6 +24,7 @@ public class RemotePointService implements AbstractRemotePointService {
     @Override
     public void registerUser(@NotNull Integer userId, @NotNull WebSocketSession webSocketSession) {
         sessions.put(userId, webSocketSession);
+//        System.out.println(sessions.get(userId));
     }
 
     @Override
@@ -67,5 +68,10 @@ public class RemotePointService implements AbstractRemotePointService {
         } catch (IOException e) {
             throw new RPSSomeException("Unnable to send message", e);
         }
+    }
+
+    @Override
+    public Integer countOfUsers(){
+        return sessions.size();
     }
 }

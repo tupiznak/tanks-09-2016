@@ -20,4 +20,6 @@ public interface AbstractRemotePointService {
 
     void sendMessageToUser(@NotNull Integer userId, @NotNull Message message)
             throws RPSSomeException;
+
+    Integer countOfUsers();
 }
