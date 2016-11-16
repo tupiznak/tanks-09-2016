@@ -1,4 +1,4 @@
-package ru.steamtanks.services.implementation;
+package ru.steamtanks.mechanics.services.implementation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import ru.steamtanks.exceptions.RemotePointService.RPSCloseSocketSessionException;
 import ru.steamtanks.exceptions.RemotePointService.RPSSomeException;
-import ru.steamtanks.services.interfaces.AbstractRemotePointService;
+import ru.steamtanks.mechanics.services.interfaces.AbstractRemotePointService;
 import ru.steamtanks.services.interfaces.Message;
 
 import java.io.IOException;

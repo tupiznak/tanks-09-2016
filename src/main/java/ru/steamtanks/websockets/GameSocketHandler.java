@@ -1,6 +1,5 @@
 package ru.steamtanks.websockets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
@@ -8,11 +7,10 @@ import org.springframework.web.socket.WebSocketSession;
 import ru.steamtanks.exceptions.RemotePointService.RPSSomeException;
 import ru.steamtanks.main.RegistrationController;
 import ru.steamtanks.services.implementation.AccountService;
-import ru.steamtanks.services.implementation.RemotePointService;
+import ru.steamtanks.mechanics.services.implementation.RemotePointService;
 import ru.steamtanks.services.interfaces.Message;
 
 import javax.naming.AuthenticationException;
-import javax.persistence.criteria.CriteriaBuilder;
 
 public class GameSocketHandler implements WebSocketHandler {
     private final AccountService accountService;

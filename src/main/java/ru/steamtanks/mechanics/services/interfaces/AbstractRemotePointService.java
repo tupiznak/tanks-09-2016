@@ -1,4 +1,4 @@
-package ru.steamtanks.services.interfaces;
+package ru.steamtanks.mechanics.services.interfaces;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -6,6 +6,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import ru.steamtanks.exceptions.RemotePointService.RPSCloseSocketSessionException;
 import ru.steamtanks.exceptions.RemotePointService.RPSSomeException;
+import ru.steamtanks.services.interfaces.Message;
 
 @Service
 public interface AbstractRemotePointService {
