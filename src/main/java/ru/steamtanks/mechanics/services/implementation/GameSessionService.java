@@ -73,14 +73,13 @@ public class GameSessionService implements AbstractGameSessionServise {
     //// TODO: 11/24/16 threads
     @Override
     public Integer startGame(@NotNull UserProfile userProfile, Integer maxCountOfUsers) {
-        if (gameSessions.isEmpty()) {
+        if (someEmptySessions.isEmpty()) {
             final GameSession gameSession = new GameSession(maxCountOfUsers);
             someEmptySessions.add(gameSession);
             gameSessions.add(gameSession);
 //            gameInitService.initGameFor(gameSession);
         }
         final GameSession session = someEmptySessions.iterator().next();//// TODO: 11/25/16 users >1
-        System.out.println(session);
         if (session.getNowCountOfUsers() + 1 >= session.getMaxCountOfUsers()) {
             someEmptySessions.remove(session);
         }
