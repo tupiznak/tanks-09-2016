@@ -79,11 +79,11 @@ public class GameSessionService implements AbstractGameSessionServise {
             gameSessions.add(gameSession);
 //            gameInitService.initGameFor(gameSession);
         }
-        System.out.println(someEmptySessions.size());
         final GameSession session = someEmptySessions.iterator().next();//// TODO: 11/25/16 users >1
-        if (session.getNowCountOfUsers() + 1 >= session.getMaxCountOfUsers()) {
+        if (session.getNowCountOfUsers() + 1 == session.getMaxCountOfUsers()) {
             someEmptySessions.remove(session);
         }
+        System.out.println(someEmptySessions.size());
         session.addUser(userProfile);
         return session.getIdGameSession();
     }
