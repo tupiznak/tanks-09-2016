@@ -33,6 +33,7 @@ public class GameInitService {
     }
 
     public void initGameFor(@NotNull GameSession gameSession) {
+/*
         gameSession.getFirst().getSquare().claimPart(PositionPart.class).setBody(new Coords(0.0f, 0.0f));
         gameSession.getSecond().getSquare().claimPart(PositionPart.class).setBody(
                 new Coords(Config.PLAYGROUND_WIDTH - Config.SQUARE_SIZE,
@@ -61,6 +62,7 @@ public class GameInitService {
                 e.printStackTrace();
             }
         }
+*/
     }
 
     private InitGame.Request createInitMessageFor(@NotNull GameSession gameSession, @NotNull Integer userId) {
@@ -74,6 +76,7 @@ public class GameInitService {
 
         colors.put(userId, Config.SELF_COLOR);
         gunColors.put(userId, Config.SELF_GUN_COLOR);
+/*
         colors.put(gameSession.getEnemy(self).getId(), Config.ENEMY_COLOR);
         gunColors.put(gameSession.getEnemy(self).getId(), Config.ENEMY_GUN_COLOR);
 
@@ -85,6 +88,7 @@ public class GameInitService {
             names.put(player.getId(), player.getUserProfile().getLogin());
         }
 
+*/
         initGameMessage.setSelf(userId);
         initGameMessage.setSelfSquareId(gameSession.getSelf(userId).getSquare().getId());
         initGameMessage.setColors(colors);

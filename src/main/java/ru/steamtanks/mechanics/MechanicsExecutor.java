@@ -36,6 +36,7 @@ public class MechanicsExecutor implements Runnable {
     @Override
     public void run() {
         //noinspection InfiniteLoopStatement
+/*
         long lastFrameMillis = STEP_TIME;
         while (true) {
             final long before = clock.millis();
@@ -52,5 +53,6 @@ public class MechanicsExecutor implements Runnable {
             final long afterSleep = clock.millis();
             lastFrameMillis = afterSleep - before;
         }
+*/
     }
 }

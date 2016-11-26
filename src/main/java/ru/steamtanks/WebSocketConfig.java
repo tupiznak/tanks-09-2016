@@ -21,8 +21,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        System.out.println("ok-");
-
         registry.addHandler(webSocketHandler, "/api/battle")
                 .addInterceptors(new HttpSessionHandshakeInterceptor())
                 .setAllowedOrigins("*");

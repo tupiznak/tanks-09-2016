@@ -27,14 +27,16 @@ public class ServerSnapshotService {
 
     public void sendSnapshotsFor(@NotNull GameSession gameSession, long frameTime) {
         final Collection<UserGameProfile> players = new ArrayList<>();
+        System.out.println(players.iterator().next().getId());
+/*
         players.add(gameSession.getFirst());
         players.add(gameSession.getSecond());
+*/
         final List<ServerPlayerSnap> playersSnaps = new ArrayList<>();
         for (UserGameProfile player : players) {
             playersSnaps.add(player.generateSnap());
         }
         final ServerSnap snap = new ServerSnap();
-
         snap.setPlayers(playersSnaps);
         snap.setServerFrameTime(frameTime);
         try {

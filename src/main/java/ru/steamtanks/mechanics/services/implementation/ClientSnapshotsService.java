@@ -39,8 +39,10 @@ public class ClientSnapshotsService {
 
     public void processSnapshotsFor(@NotNull GameSession gameSession) {
         final Collection<UserGameProfile> players = new ArrayList<>();
+/*
         players.add(gameSession.getFirst());
         players.add(gameSession.getSecond());
+*/
         for (UserGameProfile player : players) {
             final List<ClientSnap> playerSnaps = getSnapForUser(player.getId());
             if (playerSnaps.isEmpty()) {

@@ -5,11 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.steamtanks.exceptions.RemotePointService.RPSCloseSocketSessionException;
+import ru.steamtanks.exceptions.RemotePointService.RPSSomeException;
 import ru.steamtanks.mechanics.avatar.UserGameProfile;
 import ru.steamtanks.mechanics.base.ClientSnap;
 import ru.steamtanks.mechanics.services.implementation.*;
 import ru.steamtanks.models.UserProfile;
 import ru.steamtanks.services.implementation.AccountService;
+import ru.steamtanks.services.interfaces.Message;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -50,33 +52,6 @@ public class GameMechanics implements AbstractGameMechanics {
         this.clientSnapshotsService = new ClientSnapshotsService(movementService);
     }
 
-    @Override
-    public void addUser(@NotNull Integer userId) {
-        if (gameSessionService.isPlaying(userId)) {
-            return;
-        }
-        waiters.add(userId);
-    }
-
-    private void tryStartGames() {
-        final Set<UserProfile> matchedPlayers = new LinkedHashSet<>();
-
-        while (waiters.size() >= 2 || waiters.size() >= 1 && matchedPlayers.size() >= 1) {
-            final Integer candidate = waiters.poll();
-            if (!insureCandidate(candidate)) {
-                continue;
-            }
-            matchedPlayers.add(accountService.getUser(candidate));
-            if(matchedPlayers.size() == 2) {
-                final Iterator<UserProfile> iterator = matchedPlayers.iterator();
-                gameSessionService.startGame(iterator.next(), iterator.next());
-                matchedPlayers.clear();
-            }
-        }
-        matchedPlayers.stream().map(UserProfile::getId).forEach(waiters::add);
-
-    }
-
     private boolean insureCandidate(@NotNull Integer candidate) {
         return remotePointService.isConnected(candidate) &&
                 accountService.getUser(candidate) != null;
@@ -84,6 +59,14 @@ public class GameMechanics implements AbstractGameMechanics {
 
     @Override
     public void gmStep(long frameTime) {
+/*
+        final Message response = new Message("player", "200");
+        try {
+            remotePointService.sendMessageToUser(1, response);
+        } catch (RPSSomeException e) {
+            e.printStackTrace();
+        }
+*/
         while (!tasks.isEmpty()) {
             final Runnable nextTask = tasks.poll();
             if (nextTask != null) {
@@ -94,6 +77,7 @@ public class GameMechanics implements AbstractGameMechanics {
                 }
             }
         }
+//        System.out.println(gameSessionService.getSessions());
 
         for (GameSession session : gameSessionService.getSessions()) {
             clientSnapshotsService.processSnapshotsFor(session);
@@ -120,7 +104,7 @@ public class GameMechanics implements AbstractGameMechanics {
             }
         });
 
-        tryStartGames();
+//        tryStartGames();
         clientSnapshotsService.clear();
         movementService.clear();
     }
